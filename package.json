@@ -1,0 +1,19 @@
+{
+  "name": "d3bot",
+  "version": "1.0.0",
+  "description": "This is a bot designed for Diablo3 players",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "tsc --watch & nodemon dist",
+    "serve": "node dist/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^10.9.2",
+    "axios": "^0.18.0",
+    "discord.js": "^11.4.2",
+    "nodemon": "1.11.0"
+  }
+}

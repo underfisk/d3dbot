@@ -1,0 +1,12 @@
+{
+    "discord" : {
+        "bot_token" : "<your token>",
+        "prefix" : "$"
+    },
+    "battle_net" : {
+        "mashory_key" : "<your key>",
+        "region" : "eu",
+        "locale" : "en_GB"
+    }
+    
+}
