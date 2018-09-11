@@ -49,7 +49,7 @@ fs.readFile(path.join(__dirname, '../src/config.json'), 'utf8', (error, data) =>
         _config.region = json.discord.region
 
         const d3d = new D3DClient(_config)
-        const myBnet = "Underfisk#2365"
+        const myBnet = "WasAnExample"
         const d3api = new API(_config.mashory_key , _config.region, _config.locale )
     
     }
