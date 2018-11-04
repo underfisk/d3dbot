@@ -1,7 +1,7 @@
 //@ts-check
-import {D3DClient} from './Discord/D3DClient'
-import {API} from './Diablo3/API'
-import * as chars from './Diablo3/Characters'
+import {D3DClient} from './discord/d3dClient'
+import {API} from './diablo3/api'
+import * as chars from './diablo3/characters'
 import * as fs from 'fs'
 import * as path from 'path';
 
@@ -14,7 +14,8 @@ export interface Config
 {
     discord_token : string,
     discord_prefix : string,
-    mashory_key : string,
+    client_id : string,
+    client_secret: string,
     region : string,
     locale: string
 }
@@ -26,7 +27,8 @@ export interface Config
 let _config : Config = {
     discord_token : "",
     discord_prefix : "",
-    mashory_key : "",
+    client_id : "",
+    client_secret: "",
     region : "",
     locale: ""
 }
@@ -45,12 +47,13 @@ fs.readFile(path.join(__dirname, '../src/config.json'), 'utf8', (error, data) =>
     {
         _config.discord_token = json.discord.bot_token
         _config.discord_prefix = json.discord.prefix
-        _config.mashory_key = json.battle_net.mashory_key
-        _config.region = json.discord.region
+        _config.client_id = json.battle_net.client_id
+        _config.client_secret = json.battle_net.client_secret
+        _config.region = json.battle_net.region
+        _config.locale = json.battle_net.locale
 
         const d3d = new D3DClient(_config)
-        const myBnet = "WasAnExample"
-        const d3api = new API(_config.mashory_key , _config.region, _config.locale )
+        const d3api = new API(_config.client_id, _config.client_secret, _config.region, _config.locale )
     
     }
 })

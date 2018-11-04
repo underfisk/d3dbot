@@ -1,10 +1,11 @@
 {
     "discord" : {
-        "bot_token" : "<your token>",
+        "bot_token" : "<discord token>", 
         "prefix" : "$"
     },
     "battle_net" : {
-        "mashory_key" : "<your key>",
+        "client_id" : "<youroauthclientid>",
+        "client_secret" : "<youroauthclientsecret>",
         "region" : "eu",
         "locale" : "en_GB"
     }

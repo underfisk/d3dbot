@@ -1,10 +1,10 @@
 import * as Discord from 'discord.js'
-import {D3DCommands, Command} from './D3DCommands'
+import {D3DCommands, Command} from './d3dCommands'
 import {Class, Gender, Icon} from '../Diablo3/Characters'
 import {API} from '../Diablo3/API'
 import {Config} from '../index'
 import { Hero, CharacterItems, Item} from '../Diablo3/Responses';
-import * as util from '../Utility'
+import * as util from '../utility'
 
 export class D3DHandlers
 {
@@ -24,10 +24,13 @@ export class D3DHandlers
      */
     private api : API
 
+    /**
+     * Initializes the handlers needed data
+     */
     constructor(client, config : Config){
         this.d3dclient = client
         this.prefix = config.discord_prefix
-        this.api = new API(config.mashory_key, config.region, config.locale)
+        this.api = new API(config.client_id, config.client_secret, config.region, config.locale)
     }
 
     /**
@@ -45,9 +48,7 @@ export class D3DHandlers
             if (command === D3DCommands[0].key)
             {
                 if (typeof args != 'undefined' && args.length > 0)
-                {
                     this.retrieveBattleAccount(msg,args)
-                }
                 else
                 {
                     let err = new Discord.RichEmbed()
@@ -58,21 +59,13 @@ export class D3DHandlers
                 }
             }
             else if (command === D3DCommands[1].key)
-            {
                 this.listCommands(msg)
-            }
             else if (command === D3DCommands[2].key)
-            {
                 this.retrieveAccountCharacter(msg,args)
-            }
             else if (command === D3DCommands[3].key)
-            {
                 this.retrieveAccountItems(msg,args)
-            }
             else if (command === D3DCommands[4].key)
-            {
                 this.retrieveSingleItem(msg,args)
-            }
             else
             {
                 let helpMessage = new Discord.RichEmbed()
@@ -91,10 +84,9 @@ export class D3DHandlers
      * 
      * @return void
      */
-    retrieveBattleAccount = (msg : Discord.Message, args : string[]) => 
-    {
+    retrieveBattleAccount = (msg : Discord.Message, args : string[]) => {
         let bnet = args[0]
-        this.api.GetAccountProfile(bnet.trim())
+        this.api.getAccountProfile(bnet.trim())
             .then( data => {
                 let $chars : string = ""
                 data.heroes.forEach(hero => {
@@ -228,7 +220,7 @@ export class D3DHandlers
     retrieveSingleItem = (msg : Discord.Message, args : string[]) => {
         let itemSlugAndId = args[0]
         
-        this.api.GetItem(itemSlugAndId)
+        this.api.getItem(itemSlugAndId)
             .then( item => {
                 console.log(item)
                 
@@ -286,7 +278,7 @@ export class D3DHandlers
         let bnet = args[0],
             char_id = args[1]
 
-        this.api.GetAccountItems(bnet, char_id)
+        this.api.getAccountItems(bnet, char_id)
             .then( items  => {
                 let _fields : any[] = []
 
@@ -337,12 +329,11 @@ export class D3DHandlers
      * 
      * @return void
      */
-    retrieveAccountCharacter = (msg : Discord.Message ,args : string[]) => 
-    {
+    retrieveAccountCharacter = (msg : Discord.Message ,args : string[]) => {
         let bnet = args[0],
             char_id = args[1]
 
-        this.api.GetAccountCharacter(bnet, char_id)
+        this.api.getAccountCharacter(bnet, char_id)
             .then( character => {
 
                 let _class : string = util.getEnumKeyByValue<Class>(Class, character.class),
@@ -482,8 +473,7 @@ export class D3DHandlers
      * 
      * @return void
      */
-    listCommands = msg => 
-    {
+    listCommands = msg => {
         let cmdList : string = ""
         Object.values(D3DCommands).forEach( obj => {
             cmdList += `${obj.key} <${obj.args}>     -    ${obj.description} \n`

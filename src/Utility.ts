@@ -40,5 +40,4 @@ export enum Color
     RedRgb = "#ff0000",
     GreenRgb = "#18f500",
     Orange = 0xFFA500
-
 }

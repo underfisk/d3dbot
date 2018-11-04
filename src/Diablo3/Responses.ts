@@ -1,4 +1,4 @@
-import {Gender, Class} from '../Diablo3/Characters'
+import {Gender, Class} from './characters'
 
 /**
  * Battle.net profile interface

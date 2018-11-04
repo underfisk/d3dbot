@@ -1,16 +1,5 @@
-import axios, {
-    AxiosRequestConfig,
-    AxiosResponse,
-    AxiosError,
-    AxiosInstance,
-    AxiosAdapter,
-    Cancel,
-    CancelToken,
-    CancelTokenSource,
-    Canceler
-} from 'axios'
-
-import {BnetProfile, Hero, Character, Item, CharacterItems} from './Responses'
+import axios from 'axios'
+import {BnetProfile, Character, Item, CharacterItems} from './Responses'
 
 /**
  * All the communications are made here within a required instance in order
@@ -21,17 +10,63 @@ import {BnetProfile, Hero, Character, Item, CharacterItems} from './Responses'
  */
 export class API
 {
-    private mashoryKey : string = ""
-    private region : string = "eu" //default value is europe
+    /**
+     * OAuth2 client id from Blizzard Dev Portal
+     */
+    private client_id : string = ""
+
+    /**
+     * OAuth2 client secret from Blizzard Dev Portal
+     */
+    private client_secret : string = ""
+
+    /**
+     * Token is automaticly defined after retrieved
+     * using client_id and client_secret
+     */
+    private token: string = ""
+
+    /**
+     * Defines the region where we'll search data
+     * default "eu"
+     */
+    private region : string = "eu"
+
+    /**
+     * Blizzard API game data url
+     */
     private data_endpoint : string = `https://${this.region}.api.battle.net/d3/data/`
+
+    /**
+     * Blizzard API profile data url
+     */
     private profile_endpoint : string = `https://${this.region}.api.battle.net/d3/profile/`
+
+    /**
+     * Blizzard API base url
+     */
     private base_endpoint : string = `https://${this.region}.api.battle.net/d3/`
+
+    /**
+     * Locale for api data translation
+     */
     private locale : string = "en_GB"
    
-    constructor(key : string, _region? : string, _locale?: string){
-        this.mashoryKey = key
+    /**
+     * Initializes all the API needed data
+     * @param id 
+     * @param secret 
+     * @param _region 
+     * @param _locale 
+     */
+    constructor(id : string, secret: string, _region? : string, _locale?: string){
+        this.client_id = id
+        this.client_secret = secret
         this.region = _region
         this.locale = _locale
+
+        //Load our Authorization token
+        this.getToken()
     }
 
     /**
@@ -41,14 +76,13 @@ export class API
      * 
      * @return {Promise<BnetProfile>}
      */
-    GetAccountProfile (bnet) : Promise<BnetProfile> 
-    {
+    getAccountProfile (bnet) : Promise<BnetProfile> {
         return new Promise<BnetProfile>( (resolve, reject) => {
             if (typeof bnet === "undefined" ||  bnet === "")
                 reject('Please send a valid battle net name, a string')
             else
             {
-                let url = `${this.profile_endpoint + escape(bnet)}/?locale=${this.locale}&apikey=${this.mashoryKey}`
+                let url = `${this.profile_endpoint + escape(bnet)}/?locale=${this.locale}&access_token=${this.token}`
                 axios.get(url).then( res => {
                         let bnet_obj : BnetProfile= {
                             battleTag : res.data.battleTag,
@@ -127,10 +161,9 @@ export class API
      * 
      * @return Promise<Character>
      */
-    GetAccountCharacter (bnet, char_id) : Promise<Character>  
-    {
+    getAccountCharacter (bnet, char_id) : Promise<Character> {
         return new Promise<Character>( (resolve,reject) => {
-            let url = `${this.base_endpoint}profile/${escape(bnet)}/hero/${escape(char_id)}/?locale=${this.locale}&apikey=${this.mashoryKey}`
+            let url = `${this.base_endpoint}profile/${escape(bnet)}/hero/${escape(char_id)}/?locale=${this.locale}&access_token=${this.token}`
             axios.get(url).then( res => {
                 resolve(<Character> res.data)
             })
@@ -148,10 +181,9 @@ export class API
      * 
      * @return Promise<CharacterItems>
      */
-    GetAccountItems (bnet, char_id) : Promise<CharacterItems>
-    {
+    getAccountItems (bnet, char_id) : Promise<CharacterItems>{
         return new Promise<CharacterItems>( (resolve,reject) => {
-            let url = `${this.base_endpoint}profile/${escape(bnet)}/hero/${escape(char_id)}/items/?locale=${this.locale}&apikey=${this.mashoryKey}`
+            let url = `${this.base_endpoint}profile/${escape(bnet)}/hero/${escape(char_id)}/items/?locale=${this.locale}&access_token=${this.token}`
             axios.get(url).then(res => {
                 resolve(<CharacterItems>res.data)
             })
@@ -168,10 +200,10 @@ export class API
      * 
      * return Promise<Item>
      */
-    GetItem (itemSlugAndId) : Promise<Item>
-    {
+    getItem (itemSlugAndId) : Promise<Item>{
         return new Promise<Item>( (resolve,reject) => {
-            let url = `${this.data_endpoint}item/${escape(itemSlugAndId)}/?locale=${this.locale}&apikey=${this.mashoryKey}`
+            let url = `${this.data_endpoint}item/${escape(itemSlugAndId)}/?locale=${this.locale}&access_token=${this.token}`
+            console.log(url)
             axios.get(url).then(res => {
                 resolve(<Item> res.data)
             })
@@ -179,5 +211,15 @@ export class API
                 reject(err)
             })
         })
+    }
+
+    getToken = () => {
+        axios.get(`https://${this.region}.battle.net/oauth/token?client_id=${this.client_id}&client_secret=${this.client_secret}&grant_type=client_credentials`)
+            .then(res => {
+                this.token = res.data.access_token
+            })
+            .catch( err => {
+                console.log("Error on retrieving th token")
+            })
     }
 }

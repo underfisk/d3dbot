@@ -1,15 +1,15 @@
 import * as Discord from 'discord.js'
 import { D3DHandlers } from './D3DHandlers';
 import { Config } from '../index'
+
 /**
  * Discord Diablo3 Client
  */
-export class D3DClient
-{
+export class D3DClient {
   /**
    * Discord bot token which we need to connect
    */
-  private _token : string
+  private _token: string
 
   /**
    * Discord Client
@@ -22,7 +22,7 @@ export class D3DClient
    */
   private handlers: D3DHandlers
 
-  constructor( config : Config ){
+  constructor(config: Config) {
     if (typeof config.discord_token === "undefined")
       throw new Error("Please send a valid discord bot token")
 
@@ -38,12 +38,11 @@ export class D3DClient
    * 
    * @return void
    */
-  initialize ()
-  {
+  initialize() {
     this.client.on('ready', () => {
       console.log(`Logged in as ${this.client.user.tag}!`);
     });
-     
+
     //Register handlers for commands
     this.handlers.initialize()
 
